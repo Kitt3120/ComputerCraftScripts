@@ -26,8 +26,6 @@ local function PrintBanner()
 
     print("v"..version.." by Torben Schweren")
     print("https://github.com/Kitt3120")
-    print("")
-    print("")
 end
 
 local function Log(level, message)
@@ -98,6 +96,10 @@ end
 
 term.clear()
 PrintBanner()
+for i=1,3 do
+    os.sleep(1)
+    print("")
+end
 PrintFuelStatus()
 while true do
     -- Refuel
