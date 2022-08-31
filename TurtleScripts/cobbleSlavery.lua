@@ -13,7 +13,7 @@ local sentInventoryWarning = false
 local function PrintBanner()
     print("  ____      _     _     _")
     print(" / ___|___ | |__ | |__ | | ___")
-    print("| |   / _ \| '_ \| '_ \| |/ _ \")
+    print("| |   / _ \| '_ \| '_ \| |/ _ \\")
     print("| |__| (_) | |_) | |_) | |  __/")
     print(" \____\___/|_.__/|_.__/|_|\___|")
  
