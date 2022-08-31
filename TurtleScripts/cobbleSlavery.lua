@@ -1,5 +1,7 @@
 -- This script is meant to be used with a stationed Mining Turtle in combination with a cobblestone generator and a chest underneath the Mining Turtle to farm cobblestone
 
+local version = 0.3
+
 local currentFuel = turtle.getFuelLevel()
 local maxFuel = turtle.getFuelLimit()
 local fuelPercentage = currentFuel/maxFuel*100
@@ -7,6 +9,26 @@ local blockCount = 0
 local sentFuelWarning = false
 local sentChestWarning = false
 local sentInventoryWarning = false
+
+local function PrintBanner()
+    print("  ____      _     _     _")
+    print(" / ___|___ | |__ | |__ | | ___")
+    print("| |   / _ \| '_ \| '_ \| |/ _ \")
+    print("| |__| (_) | |_) | |_) | |  __/")
+    print(" \____\___/|_.__/|_.__/|_|\___|")
+ 
+    print(" ____  _")
+    print("/ ___|| | __ ___   _____ _ __ _   _")
+    print("\___ \| |/ _` \ \ / / _ \ '__| | | |")
+    print(" ___) | | (_| |\ V /  __/ |  | |_| |")
+    print("|____/|_|\__,_| \_/ \___|_|   \__, |")
+    print("                              |___/")
+
+    print("v"..version.." by Torben Schweren")
+    print("https://github.com/Kitt3120")
+    print("")
+    print("")
+end
 
 local function Log(level, message)
     print(level..": "..message)
@@ -74,6 +96,8 @@ local function TransferAllItems()
     return true
 end
 
+term.clear()
+PrintBanner()
 PrintFuelStatus()
 while true do
     -- Refuel
