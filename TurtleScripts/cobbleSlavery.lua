@@ -24,7 +24,8 @@ local function PrintBanner()
     print("|____/|_|\\__,_| \\_/ \\___|_|   \\__, |")
     print("                              |___/")
 
-    print("v"..version.." by Torben Schweren - https://github.com/Kitt3120")
+    print("v"..version.." by Torben Schweren")
+    write("https://github.com/Kitt3120")
 end
 
 local function Log(level, message)
@@ -96,9 +97,9 @@ end
 term.clear()
 PrintBanner()
 os.sleep(3)
-for i=1,8 do
+for i=1,10 do
     print("")
-    os.sleep(0.1)
+    os.sleep(0.05)
 end
 PrintFuelStatus()
 while true do
