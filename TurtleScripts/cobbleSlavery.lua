@@ -96,8 +96,8 @@ end
 
 term.clear()
 PrintBanner()
-for i=1,3 do
-    os.sleep(1)
+os.sleep(3)
+for i=1,5 do
     print("")
 end
 PrintFuelStatus()
