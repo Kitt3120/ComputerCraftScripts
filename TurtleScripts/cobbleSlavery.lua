@@ -1,3 +1,5 @@
+-- This script is meant to be used with a stationed Mining Turtle in combination with a cobblestone generator and a chest underneath the Mining Turtle to farm cobblestone
+
 local currentFuel = turtle.getFuelLevel()
 local maxFuel = turtle.getFuelLimit()
 local fuelPercentage = currentFuel/maxFuel*100
