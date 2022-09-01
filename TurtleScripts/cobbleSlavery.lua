@@ -1,14 +1,13 @@
 -- This script is meant to be used with a stationed Mining Turtle in combination with a cobblestone generator and a chest underneath the Mining Turtle to farm cobblestone
 
-local version = 0.3
+local version = 0.4
 
 local currentFuel = turtle.getFuelLevel()
 local maxFuel = turtle.getFuelLimit()
-local fuelPercentage = currentFuel/maxFuel*100
+local currentFuelPercentage  = currentFuel/maxFuel*100
 local blockCount = 0
-local sentFuelWarning = false
-local sentChestWarning = false
-local sentInventoryWarning = false
+local sizeX, sizeY = term.getSize()
+local notificationsBuffer = "None"
 
 local function PrintBanner()
     print("  ____      _     _     _")
@@ -28,8 +27,20 @@ local function PrintBanner()
     write("https://github.com/Kitt3120")
 end
 
+local function WriteToNotificationsBuffer(text)
+    if notificationsBuffer == "None" then
+        notificationsBuffer = text
+    else
+        notificationsBuffer = notificationsBuffer..text
+    end
+end
+
+local function PrintToNotificationsBuffer(text)
+    WriteToNotificationsBuffer(text.."\n")
+end
+
 local function Log(level, message)
-    print(level..": "..message)
+    PrintToNotificationsBuffer(level..": "..message)
 end
 
 local function Info(message)
@@ -44,22 +55,9 @@ local function Error(message)
     Log("Error", message)
 end
 
-local function PrintFuelStatus()
-    Info("Fuel level at "..fuelPercentage.."% ("..currentFuel.."/"..maxFuel..")")
-end
-
-local function PrintMiningStatus()
-    Info("Mined "..blockCount.." blocks")
-end
-
 local function PrintStatus()
     PrintFuelStatus()
     PrintMiningStatus()
-end
-
-local function RefreshFuelValues()
-    currentFuel = turtle.getFuelLevel()
-    fuelPercentage = currentFuel/maxFuel*100
 end
 
 local function Refuel()
@@ -70,7 +68,12 @@ local function Refuel()
     return result
 end
 
-local function InventoryFull()
+local function RefreshFuelValues()
+    currentFuel = turtle.getFuelLevel()
+    currentFuelPercentage  = currentFuel/maxFuel*100
+end
+
+local function IsInventoryFull()
     local count = turtle.getItemCount(15)
     if count == 0 then
         return false
@@ -94,61 +97,81 @@ local function TransferAllItems()
     return true
 end
 
+local function WriteFuelBar()
+    write("[")
+    local fuelSteps = currentFuelPercentage/5
+    for i=1,fuelSteps do
+        write("=")
+    end
+    local missingSteps = 20-fuelSteps
+    for i=1,missingSteps do
+        write(" ")
+    end
+    write("]")
+end
+
+local function PrintScreen()
+    term.clear()
+    term.setCursorPos(1, 1)
+    print("CobbleSlavery v"..version.." by Kitt3120")
+
+    term.setCursorPos(1, sizeY/2 - 2)
+    print("Notifications:")
+    print(notificationsBuffer)
+
+    term.setCursorPos(1, sizeY-1)
+    write("Blocks mined: "..blockCount)
+
+    term.setCursorPos(1, sizeY)
+    write("Fuel ")
+    WriteFuelBar()
+    write(" "..currentFuelPercentage.."%")
+
+    notificationsBuffer = "None"
+end
+
+
+
+
+
+-- Start
 term.clear()
 PrintBanner()
 os.sleep(3)
-for i=1,10 do
+for i=1,13 do
     print("")
     os.sleep(0.05)
 end
-PrintFuelStatus()
+
+-- Loop
 while true do
     -- Refuel
-    if Refuel() then
+    RefreshFuelValues()
+    if currentFuel < maxFuel and Refuel() then
+        RefreshFuelValues()
         Info("Refueled from inventory")
-        RefreshFuelValues()
-        PrintFuelStatus()
-    else
-        RefreshFuelValues()
     end
 
     -- Transmit items to external inventory
     if TransferAllItems() == false then
-        if sentChestWarning == false then
-            Warning("External inventory has ran out of space, internal inventory will fill up soon!")
-            sentChestWarning = true
-        end
-    else
-        sentChestWarning = false
+        Warning("External inventory has ran out of space, internal inventory will fill up soon!")
     end
 
     -- Mining logic
     if currentFuel > 0 then
-        sentFuelWarning = false
-        if InventoryFull() == false then
-            sentInventoryWarning = false
+        if IsInventoryFull() == false then
             if turtle.detect() then
                 turtle.dig()
                 blockCount = blockCount + 1
-                if blockCount % 250 == 0 then
-                    PrintStatus()
-                end
-            else
-                os.sleep(1)
             end
         else
-            if sentInventoryWarning == false then
-                Error("No inventory space available - Mining stopped")
-                sentInventoryWarning = true
-            end
-            os.sleep(10)
+            Error("No inventory space available - Mining stopped")
         end
     else
-        if sentFuelWarning == false then
-            Error("No fuel available - Mining stopped")
-            Info("Fuel can be provided through slot 16 of the internal inventory")
-            sentFuelWarning = true
-        end
-        os.sleep(10)
+        Error("No fuel available - Mining stopped")
+        Info("Fuel can be provided through slot 16 of the internal inventory")
     end
+
+    PrintScreen()
+    os.sleep(1)
 end
